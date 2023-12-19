@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import './App.css'; // Import your CSS file for styling
+import axios from 'axios'; // Import Axios
+// import axios from 'axios';
+
 
 const App = () => {
   const [formData, setFormData] = useState({
@@ -27,16 +30,14 @@ const App = () => {
         formData.email &&
         formData.hobbies
       ) {
-        const response = await fetch('/users', {
-          method: 'POST',
+        const response = await axios.post('/users', formData, {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(formData),
         });
   
-        if (response.ok) {
-          const newUser = await response.json();
+        if (response.status === 200) {
+          const newUser = response.data;
           setTableData([...tableData, newUser]);
           setFormData({ name: '', phoneNumber: '', email: '', hobbies: '' });
         } else {
@@ -51,7 +52,7 @@ const App = () => {
       alert('Failed to save user. Please check console for more details.');
     }
   };
-
+  
   const handleDelete = async () => {
     const updatedTableData = tableData.filter(
       (item) => !selectedRows.includes(item.id)

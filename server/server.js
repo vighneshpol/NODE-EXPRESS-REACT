@@ -15,6 +15,30 @@ const pool = new Pool({
 
 app.use(express.json());
 
+
+
+app.get('/',(req,res) => {
+  res.json({
+    info: 'VIghnesh Pol Node.js express and PostgreSQL CRUDS '
+  })
+})
+
+// READ - Retrieve all users
+app.get('/users', async (req, res) => {
+  const userId = req.params.id;
+  const { name, phoneNumber, email, hobbies } = req.body;
+  try {
+    const client = await pool.connect();
+    const result = await client.query('SELECT * FROM users;');
+    const users = result.rows;
+    res.json(users);
+    client.release();
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // CREATE - Add a new user
 app.post('/users', async (req, res) => {
   const { name, phoneNumber, email, hobbies } = req.body;
@@ -39,21 +63,7 @@ app.post('/users', async (req, res) => {
 });
 
 
-// READ - Retrieve all users
-app.get('/users', async (req, res) => {
-  const userId = req.params.id;
-  const { name, phoneNumber, email, hobbies } = req.body;
-  try {
-    const client = await pool.connect();
-    const result = await client.query('SELECT * FROM users');
-    const users = result.rows;
-    res.json(users);
-    client.release();
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
-  }
-});
+
 
 // UPDATE - Update user details by ID
 app.put('/users/:id', async (req, res) => {
